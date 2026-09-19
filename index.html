@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cyberM — Cybersecurity Platform</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-brand" onclick="navigateTo('home')">
+        <div class="brand-icon">cM</div>
+        cyber<span>M</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a class="active" data-page="home" onclick="navigateTo('home')">Home</a>
+        <a data-page="resources" onclick="navigateTo('resources')">Resources</a>
+        <a data-page="roadmap" onclick="navigateTo('roadmap')">Roadmap</a>
+        <a data-page="tools" onclick="navigateTo('tools')">Tools</a>
+        <a data-page="about" onclick="navigateTo('about')">About</a>
+        <a data-page="contact" onclick="navigateTo('contact')">Contact</a>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HOME ========== -->
+  <section class="section active" id="page-home">
+    <div class="hero">
+      <div class="hero-content">
+        <div class="hero-badge"><span class="dot"></span> Cybersecurity Learning Platform</div>
+        <h1>Master <span class="highlight">Cybersecurity</span> with the right resources.</h1>
+        <p>Curated tools, structured roadmaps, and open resources — everything you need to build a career in cybersecurity.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="navigateTo('resources')">Explore Resources →</button>
+          <button class="btn btn-secondary" onclick="navigateTo('roadmap')">View Roadmaps</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-graphic">
+          <div class="hero-ring"><div class="ring-dot"></div></div>
+          <div class="hero-ring"><div class="ring-dot"></div></div>
+          <div class="hero-ring"><div class="ring-dot"></div></div>
+          <div class="hero-ring"></div>
+          <div class="hero-center">🛡️</div>
+        </div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Resources</div></div>
+      <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Tools Covered</div></div>
+      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Career Paths</div></div>
+      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free Resources</div></div>
+    </div>
+  </section>
+
+  <!-- ========== RESOURCES ========== -->
+  <section class="section" id="page-resources">
+    <div class="section-label">// Resources</div>
+    <h2 class="section-title">Cybersecurity Resources</h2>
+    <p class="section-desc">Search and access free, open-internet resources to learn, practice, and stay updated.</p>
+    <div class="section-divider"></div>
+
+    <div class="search-container">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search resources by title, source, or topic...">
+      </div>
+    </div>
+
+    <div class="resource-tabs">
+      <button class="resource-tab active" data-filter="all" onclick="filterResources('all', this)">All</button>
+      <button class="resource-tab" data-filter="article" onclick="filterResources('article', this)">Articles</button>
+      <button class="resource-tab" data-filter="video" onclick="filterResources('video', this)">Videos</button>
+      <button class="resource-tab" data-filter="blog" onclick="filterResources('blog', this)">Blogs</button>
+    </div>
+
+    <div class="resource-grid" id="resourceGrid"></div>
+  </section>
+
+  <!-- ========== ROADMAP ========== -->
+  <section class="section" id="page-roadmap">
+    <div class="section-label">// Roadmap</div>
+    <h2 class="section-title">Career Roadmaps</h2>
+    <p class="section-desc">Structured paths to guide your cybersecurity journey from beginner to expert.</p>
+    <div class="section-divider"></div>
+
+    <div class="roadmap-featured">
+      <div class="roadmap-featured-badge">★ Main Roadmap</div>
+      <h3>Complete Cybersecurity Career Path</h3>
+      <p>A comprehensive roadmap covering everything from networking fundamentals to advanced penetration testing and incident response.</p>
+      <div class="roadmap-steps">
+        <div class="roadmap-step"><div class="step-node">1</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">2</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">3</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">4</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">5</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">6</div><div class="step-line"></div></div>
+        <div class="roadmap-step"><div class="step-node">7</div></div>
+      </div>
+      <div style="display:flex; gap:32px; margin-top:18px; flex-wrap:wrap;">
+        <span style="font-size:0.75rem; color:var(--text-muted);">① IT Fundamentals</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">② Networking</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">③ Security Basics</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">④ Tools & Labs</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">⑤ Specialization</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">⑥ Certifications</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);">⑦ Career</span>
+      </div>
+    </div>
+
+    <div class="roadmap-grid" id="roadmapGrid"></div>
+  </section>
+
+  <!-- ========== TOOLS ========== -->
+  <section class="section" id="page-tools">
+    <div class="section-label">// Tools</div>
+    <h2 class="section-title">Trending Tools</h2>
+    <p class="section-desc">Industry-standard tools. Learn them with us — we offer structured training for each.</p>
+    <div class="section-divider"></div>
+    <div class="tools-grid" id="toolsGrid"></div>
+  </section>
+
+  <!-- ========== ABOUT ========== -->
+  <section class="section" id="page-about">
+    <div class="section-label">// About</div>
+    <h2 class="section-title">About cyberM</h2>
+    <p class="section-desc">A platform built to simplify cybersecurity learning.</p>
+    <div class="section-divider"></div>
+
+    <div class="about-content">
+      <div class="about-text">
+        <h3>Who We Are</h3>
+        <p>cyberM is a cybersecurity learning platform. We curate the best open resources, build structured career roadmaps, and offer hands-on tool training for aspiring and professional security practitioners.</p>
+        <h3>What We Do</h3>
+        <p>We don't sell software. We sell knowledge. Our tool training programs teach you how to use industry-standard security tools effectively — from Nmap to Burp Suite, Metasploit to Wireshark.</p>
+        <h3>Our Mission</h3>
+        <p>Make cybersecurity education accessible, structured, and practical. Bridge the gap between free resources and paid certifications with guided, affordable learning paths.</p>
+      </div>
+      <div class="about-values">
+        <div class="value-card"><div class="value-icon">🎯</div><h4>Structured Learning</h4><p>Clear roadmaps. No confusion. Know exactly what to learn next.</p></div>
+        <div class="value-card"><div class="value-icon">🔓</div><h4>Open Resources</h4><p>We link to the best free content across the internet. No gatekeeping.</p></div>
+        <div class="value-card"><div class="value-icon">🛠️</div><h4>Tool Training</h4><p>Learn to use real security tools with guided, practical training programs.</p></div>
+        <div class="value-card"><div class="value-icon">🤝</div><h4>Community First</h4><p>Built by practitioners, for practitioners. Your growth is our metric.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CONTACT ========== -->
+  <section class="section" id="page-contact">
+    <div class="section-label">// Contact</div>
+    <h2 class="section-title">Get in Touch</h2>
+    <p class="section-desc">Have questions or want to enroll in tool training? Reach out.</p>
+    <div class="section-divider"></div>
+
+    <div class="contact-layout">
+      <div class="contact-info">
+        <div class="contact-item"><div class="contact-icon">✉️</div><div><h4>Email</h4><p>contact@cyberm.io</p></div></div>
+        <div class="contact-item"><div class="contact-icon">📍</div><div><h4>Location</h4><p>Remote — Global</p></div></div>
+        <div class="contact-item"><div class="contact-icon">💬</div><div><h4>Social</h4><p>Twitter / LinkedIn / GitHub</p></div></div>
+        <div class="contact-item"><div class="contact-icon">🕐</div><div><h4>Response Time</h4><p>Within 24 hours</p></div></div>
+      </div>
+      <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
+        <div class="form-row">
+          <div class="form-group"><label for="cName">Name</label><input type="text" id="cName" placeholder="Your name" required></div>
+          <div class="form-group"><label for="cEmail">Email</label><input type="email" id="cEmail" placeholder="you@email.com" required></div>
+        </div>
+        <div class="form-group">
+          <label for="cSubject">Subject</label>
+          <select id="cSubject">
+            <option value="general">General Inquiry</option>
+            <option value="tool-training">Tool Training Enrollment</option>
+            <option value="business">Business Partnership</option>
+            <option value="support">Support</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="cMessage">Message</label>
+          <textarea id="cMessage" placeholder="Tell us what you need..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Send Message →</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>© 2024 cyberM. All rights reserved.</p>
+      <div class="footer-links">
+        <a onclick="navigateTo('about')">About</a>
+        <a onclick="navigateTo('contact')">Contact</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== TOOL DETAIL MODAL ========== -->
+  <div class="modal-overlay" id="toolModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Tool Name</h2>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="overview-text" id="modalOverview"></div>
+        <div class="modal-features" id="modalFeatures">
+          <h4>What You'll Learn</h4>
+          <ul id="modalFeatureList"></ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="enrollTraining()">Enroll in Training →</button>
+        <button class="btn btn-secondary" onclick="closeModal(); navigateTo('contact');">Contact Us</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (Load data first, then logic) -->
+  <script src="js/data.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
