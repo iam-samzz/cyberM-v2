@@ -78,18 +78,36 @@
     <p class="section-desc">Search and access free, open-internet resources to learn, practice, and stay updated.</p>
     <div class="section-divider"></div>
 
-    <div class="search-container">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="searchInput" placeholder="Search resources by title, source, or topic...">
-      </div>
+    <div class="resource-dashboard-stats">
+      <div class="resource-stat-card"><span class="resource-stat-label">Learning Resources</span><strong id="resourceTotalCount">0</strong><span class="resource-stat-note">Curated links</span></div>
+      <div class="resource-stat-card"><span class="resource-stat-label">Learning Categories</span><strong id="resourceCategoryCount">0</strong><span class="resource-stat-note">Topics to explore</span></div>
+      <div class="resource-stat-card"><span class="resource-stat-label">Beginner Friendly</span><strong id="resourceBeginnerCount">0</strong><span class="resource-stat-note">Start here</span></div>
+      <div class="resource-stat-card"><span class="resource-stat-label">External Access</span><strong>100%</strong><span class="resource-stat-note">Open resource links</span></div>
     </div>
 
-    <div class="resource-tabs">
-      <button class="resource-tab active" data-filter="all" onclick="filterResources('all', this)">All</button>
-      <button class="resource-tab" data-filter="article" onclick="filterResources('article', this)">Articles</button>
-      <button class="resource-tab" data-filter="video" onclick="filterResources('video', this)">Videos</button>
-      <button class="resource-tab" data-filter="blog" onclick="filterResources('blog', this)">Blogs</button>
+    <div class="resource-controls">
+      <div class="search-container">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by title, topic, provider, or skill...">
+        </div>
+      </div>
+      <select id="resourceLevelFilter" class="resource-select" aria-label="Filter by learning level">
+        <option value="all">All levels</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </div>
+
+    <div class="resource-category-strip" id="resourceCategoryStrip">
+      <button class="resource-category active" data-category="all" onclick="filterResourceCategory('all', this)">All topics</button>
+      <button class="resource-category" data-category="fundamentals" onclick="filterResourceCategory('fundamentals', this)">Fundamentals</button>
+      <button class="resource-category" data-category="web-security" onclick="filterResourceCategory('web-security', this)">Web Security</button>
+      <button class="resource-category" data-category="defensive-security" onclick="filterResourceCategory('defensive-security', this)">Defensive Security</button>
+      <button class="resource-category" data-category="hands-on" onclick="filterResourceCategory('hands-on', this)">Hands-on Labs</button>
+      <button class="resource-category" data-category="frameworks" onclick="filterResourceCategory('frameworks', this)">Frameworks</button>
+      <button class="resource-category" data-category="news" onclick="filterResourceCategory('news', this)">News & Blogs</button>
     </div>
 
     <div class="resource-grid" id="resourceGrid"></div>
@@ -131,11 +149,40 @@
 
   <!-- ========== TOOLS ========== -->
   <section class="section" id="page-tools">
-    <div class="section-label">// Tools</div>
-    <h2 class="section-title">Trending Tools</h2>
-    <p class="section-desc">Industry-standard tools. Learn them with us — we offer structured training for each.</p>
+    <div class="section-label">// Tools Directory</div>
+    <h2 class="section-title">Cybersecurity Tools</h2>
+    <p class="section-desc">Explore the tools in cyberM by security category. Search, filter, compare basic use cases, and open a detailed overview before practicing in an authorized lab.</p>
     <div class="section-divider"></div>
-    <div class="tools-grid" id="toolsGrid"></div>
+
+    <div class="tools-dashboard-stats" id="toolsStats">
+      <div class="tools-stat-card"><span class="tools-stat-label">Total Tools</span><strong id="totalToolsCount">0</strong><span class="tools-stat-note">Available in cyberM</span></div>
+      <div class="tools-stat-card"><span class="tools-stat-label">Categories</span><strong id="totalCategoriesCount">0</strong><span class="tools-stat-note">Security domains</span></div>
+      <div class="tools-stat-card"><span class="tools-stat-label">Trending</span><strong id="trendingToolsCount">0</strong><span class="tools-stat-note">Popular starting points</span></div>
+      <div class="tools-stat-card"><span class="tools-stat-label">Learning Mode</span><strong>100%</strong><span class="tools-stat-note">Educational directory</span></div>
+    </div>
+
+    <div class="tools-controls">
+      <div class="tools-search-box">
+        <span>⌕</span>
+        <input id="toolSearchInput" type="search" placeholder="Search tools, categories, or use cases..." aria-label="Search cybersecurity tools">
+      </div>
+      <select id="toolCategoryFilter" aria-label="Filter tools by category">
+        <option value="all">All categories</option>
+      </select>
+      <select id="toolLevelFilter" aria-label="Filter tools by difficulty">
+        <option value="all">All levels</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
+      </select>
+    </div>
+
+    <div class="tools-directory-heading">
+      <div><h3>Tool Directory</h3><p id="toolsResultSummary">Showing all tools</p></div>
+      <button class="btn btn-secondary tools-reset-btn" id="resetToolFilters">Reset filters</button>
+    </div>
+    <div class="tools-category-summary" id="toolsCategorySummary"></div>
+    <div class="tools-grid enhanced-tools-grid" id="toolsGrid"></div>
   </section>
 
   <!-- ========== ABOUT ========== -->
@@ -233,6 +280,33 @@
       </div>
     </div>
   </div>
+
+
+  <!-- ========== cyberM ASSISTANT ========== -->
+  <button class="assistant-launcher" id="assistantLauncher" aria-label="Open cyberM Assistant" title="cyberM Assistant">🤖</button>
+
+  <aside class="assistant-panel" id="assistantPanel" aria-label="cyberM Assistant" aria-hidden="true">
+    <div class="assistant-header">
+      <div>
+        <div class="assistant-kicker">// cyberM Assistant</div>
+        <h2>How can I help?</h2>
+      </div>
+      <button class="assistant-close" id="assistantClose" aria-label="Close assistant">✕</button>
+    </div>
+    <div class="assistant-status"><span></span> Guided demo assistant · No backend required</div>
+    <div class="assistant-messages" id="assistantMessages" aria-live="polite"></div>
+    <div class="assistant-quick-actions" id="assistantQuickActions">
+      <button data-assistant-action="career">Start my cybersecurity journey</button>
+      <button data-assistant-action="resources">Find learning resources</button>
+      <button data-assistant-action="tools">Explore security tools</button>
+      <button data-assistant-action="roadmap">Show career paths</button>
+    </div>
+    <form class="assistant-input-row" id="assistantForm">
+      <input id="assistantInput" type="text" placeholder="Ask about careers, resources or tools..." autocomplete="off" />
+      <button class="btn btn-primary" type="submit" aria-label="Send message">➤</button>
+    </form>
+    <div class="assistant-disclaimer">Demo guidance only. Use security tools only on systems you own or are authorized to test.</div>
+  </aside>
 
   <!-- Scripts (Load data first, then logic) -->
   <script src="js/data.js"></script>
