@@ -48,72 +48,82 @@ document.getElementById('hamburger').addEventListener('click', function() {
 
 /* ========== SEARCH & FILTER RESOURCES ========== */
 let currentFilter = 'all';
+let currentCategory = 'all';
+let currentLevel = 'all';
 let currentSearch = '';
 
 function renderResources() {
   const grid = document.getElementById('resourceGrid');
-  
-  // Apply both filter and search
-  let filtered = resources;
-  
-  if (currentFilter !== 'all') {
-    filtered = filtered.filter(r => r.type === currentFilter);
+  if (!grid) return;
+
+  let filtered = resources.filter(r => {
+    const matchesType = currentFilter === 'all' || r.type === currentFilter;
+    const matchesCategory = currentCategory === 'all' || r.category === currentCategory;
+    const matchesLevel = currentLevel === 'all' || r.level === currentLevel;
+    const text = `${r.title} ${r.desc} ${r.source} ${r.skill} ${r.category}`.toLowerCase();
+    const matchesSearch = !currentSearch || text.includes(currentSearch);
+    return matchesType && matchesCategory && matchesLevel && matchesSearch;
+  });
+
+  if (grid) {
+    grid.innerHTML = filtered.length ? filtered.map(r => `
+      <article class="resource-card" data-type="${r.type}" data-category="${r.category}">
+        <div class="resource-card-top">
+          <span class="resource-type">${r.type === 'hands-on' ? 'LAB' : r.type.toUpperCase()}</span>
+          <span class="resource-level ${r.level}">${r.level}</span>
+        </div>
+        <div class="resource-card-icon">${r.type === 'video' ? '▶' : r.type === 'blog' ? '◉' : r.type === 'hands-on' ? '⌘' : '↗'}</div>
+        <h3>${r.title}</h3>
+        <p>${r.desc}</p>
+        <div class="resource-tags"><span>${r.category.replace('-', ' ')}</span><span>${r.skill}</span></div>
+        <div class="resource-meta"><span>📌 ${r.source}</span><span>◷ ${r.level}</span></div>
+        <a class="resource-link" href="${r.link}" target="_blank" rel="noopener noreferrer">Open resource ↗</a>
+      </article>
+    `).join('') : `
+      <div class="no-results" style="grid-column:1/-1;">
+        <div class="no-results-icon">🔍</div><h3>No resources found</h3>
+        <p>Try another keyword, category, or learning level.</p>
+      </div>`;
   }
-  
-  if (currentSearch) {
-    const searchLower = currentSearch.toLowerCase();
-    filtered = filtered.filter(r => 
-      r.title.toLowerCase().includes(searchLower) ||
-      r.desc.toLowerCase().includes(searchLower) ||
-      r.source.toLowerCase().includes(searchLower) ||
-      r.type.toLowerCase().includes(searchLower)
-    );
-  }
-  
-  if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div class="no-results" style="grid-column: 1 / -1;">
-        <div class="no-results-icon">🔍</div>
-        <h3>No resources found</h3>
-        <p>Try adjusting your search or filter criteria</p>
-      </div>
-    `;
-    return;
-  }
-  
-  grid.innerHTML = filtered.map(r => `
-    <div class="resource-card" data-type="${r.type}">
-      <div class="resource-type">${r.type}</div>
-      <h3>${r.title}</h3>
-      <p>${r.desc}</p>
-      <div class="resource-meta">
-        <span>📌 ${r.source}</span>
-        <span>📅 ${r.date}</span>
-      </div>
-      <a class="resource-link" href="${r.link}" target="_blank" rel="noopener">Access Resource →</a>
-    </div>
-  `).join('');
+
+  const total = document.getElementById('resourceTotalCount');
+  const cats = document.getElementById('resourceCategoryCount');
+  const beginners = document.getElementById('resourceBeginnerCount');
+  if (total) total.textContent = resources.length;
+  if (cats) cats.textContent = new Set(resources.map(r => r.category)).size;
+  if (beginners) beginners.textContent = resources.filter(r => r.level === 'beginner').length;
 }
 
 function filterResources(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderResources();
 }
 
-// Search functionality
-const searchInput = document.getElementById('searchInput');
-let searchTimeout;
-searchInput.addEventListener('input', function(e) {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    currentSearch = e.target.value.trim();
-    renderResources();
-  }, 300);
-});
+function filterResourceCategory(category, btn) {
+  currentCategory = category;
+  document.querySelectorAll('.resource-category').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderResources();
+}
 
-// Initial render
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', function(e) {
+    currentSearch = e.target.value.trim().toLowerCase();
+    renderResources();
+  });
+}
+
+const resourceLevelFilter = document.getElementById('resourceLevelFilter');
+if (resourceLevelFilter) {
+  resourceLevelFilter.addEventListener('change', function(e) {
+    currentLevel = e.target.value;
+    renderResources();
+  });
+}
+
 renderResources();
 
 /* ========== RENDER ROADMAPS ========== */
