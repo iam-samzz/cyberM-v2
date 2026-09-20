@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>cyberM — Cybersecurity Platform</title>
-  
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css" rel="stylesheet">
-  
-  <!-- Custom CSS -->
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -33,7 +33,7 @@
         <a data-page="contact" onclick="navigateTo('contact')">Contact</a>
       </div>
       <div class="nav-right">
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
         <button class="hamburger" id="hamburger" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -46,11 +46,14 @@
     <div class="hero">
       <div class="hero-content">
         <div class="hero-badge"><span class="dot"></span> Cybersecurity Learning Platform</div>
-        <h1>Master <span class="highlight">Cybersecurity</span> with the right resources.</h1>
-        <p>Curated tools, structured roadmaps, and open resources — everything you need to build a career in cybersecurity.</p>
+        <h1>Master <span class="highlight">Cybersecurity</span> with structured roadmaps.</h1>
+        <p>Curated tools, vertical career roadmaps, and open resources — everything you need to build a career in cybersecurity.</p>
         <div class="hero-actions">
-          <button class="btn btn-primary" onclick="navigateTo('resources')">Explore Resources →</button>
-          <button class="btn btn-secondary" onclick="navigateTo('roadmap')">View Roadmaps</button>
+          <button class="btn btn-primary" onclick="navigateTo('roadmap')">
+            View Vertical Roadmaps
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn btn-secondary" onclick="navigateTo('resources')">Explore Resources</button>
         </div>
       </div>
       <div class="hero-visual">
@@ -59,15 +62,17 @@
           <div class="hero-ring"><div class="ring-dot"></div></div>
           <div class="hero-ring"><div class="ring-dot"></div></div>
           <div class="hero-ring"></div>
-          <div class="hero-center">🛡️</div>
+          <div class="hero-center">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
         </div>
       </div>
     </div>
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Resources</div></div>
+      <div class="stat-item"><div class="stat-num">46+</div><div class="stat-label">Resources</div></div>
       <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Tools Covered</div></div>
-      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Career Paths</div></div>
-      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free Resources</div></div>
+      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Vertical Roadmaps</div></div>
+      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Free Learning</div></div>
     </div>
   </section>
 
@@ -88,7 +93,9 @@
     <div class="resource-controls">
       <div class="search-container">
         <div class="search-box">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
           <input type="text" class="search-input" id="searchInput" placeholder="Search by title, topic, provider, or skill...">
         </div>
       </div>
@@ -113,38 +120,48 @@
     <div class="resource-grid" id="resourceGrid"></div>
   </section>
 
-  <!-- ========== ROADMAP ========== -->
+  <!-- ========== ROADMAP PAGE ========== -->
   <section class="section" id="page-roadmap">
-    <div class="section-label">// Roadmap</div>
-    <h2 class="section-title">Career Roadmaps</h2>
-    <p class="section-desc">Structured paths to guide your cybersecurity journey from beginner to expert.</p>
+    <div class="section-label">// Career Paths & Learning Flow</div>
+    <h2 class="section-title">Cybersecurity Vertical Roadmaps</h2>
+    <p class="section-desc">Switch between foundational basics and professional track roadmaps. Follow node-by-node vertical progression to build industry-ready skills.</p>
     <div class="section-divider"></div>
 
-    <div class="roadmap-featured">
-      <div class="roadmap-featured-badge">★ Main Roadmap</div>
-      <h3>Complete Cybersecurity Career Path</h3>
-      <p>A comprehensive roadmap covering everything from networking fundamentals to advanced penetration testing and incident response.</p>
-      <div class="roadmap-steps">
-        <div class="roadmap-step"><div class="step-node">1</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">2</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">3</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">4</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">5</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">6</div><div class="step-line"></div></div>
-        <div class="roadmap-step"><div class="step-node">7</div></div>
-      </div>
-      <div style="display:flex; gap:32px; margin-top:18px; flex-wrap:wrap;">
-        <span style="font-size:0.75rem; color:var(--text-muted);">① IT Fundamentals</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">② Networking</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">③ Security Basics</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">④ Tools & Labs</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">⑤ Specialization</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">⑥ Certifications</span>
-        <span style="font-size:0.75rem; color:var(--text-muted);">⑦ Career</span>
-      </div>
+    <!-- Switcher Bar for Roadmaps -->
+    <div class="roadmap-navigation-bar" id="roadmapNavButtons">
+      <button class="roadmap-nav-btn active" data-roadmap="basics" onclick="switchRoadmap('basics')">
+        <span>Cybersecurity Basics</span>
+        <span class="main-tag">Main</span>
+      </button>
+      <button class="roadmap-nav-btn" data-roadmap="soc" onclick="switchRoadmap('soc')">
+        <span>SOC Analyst</span>
+      </button>
+      <button class="roadmap-nav-btn" data-roadmap="pentest" onclick="switchRoadmap('pentest')">
+        <span>Penetration Tester</span>
+      </button>
+      <button class="roadmap-nav-btn" data-roadmap="cloud" onclick="switchRoadmap('cloud')">
+        <span>Cloud Security Engineer</span>
+      </button>
+      <button class="roadmap-nav-btn" data-roadmap="dfir" onclick="switchRoadmap('dfir')">
+        <span>DFIR Specialist</span>
+      </button>
+      <button class="roadmap-nav-btn" data-roadmap="grc" onclick="switchRoadmap('grc')">
+        <span>GRC Analyst</span>
+      </button>
     </div>
 
-    <div class="roadmap-grid" id="roadmapGrid"></div>
+    <!-- Active Roadmap Header -->
+    <div class="roadmap-active-header" id="roadmapHeader">
+      <!-- Dynamic header content rendered by JS -->
+    </div>
+
+    <!-- Vertical Roadmap Flow Container -->
+    <div class="vertical-roadmap-wrapper">
+      <div class="vertical-roadmap-line"></div>
+      <div id="verticalRoadmapNodes">
+        <!-- Vertical nodes rendered dynamically by JS -->
+      </div>
+    </div>
   </section>
 
   <!-- ========== TOOLS ========== -->
@@ -163,7 +180,7 @@
 
     <div class="tools-controls">
       <div class="tools-search-box">
-        <span>⌕</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
         <input id="toolSearchInput" type="search" placeholder="Search tools, categories, or use cases..." aria-label="Search cybersecurity tools">
       </div>
       <select id="toolCategoryFilter" aria-label="Filter tools by category">
@@ -195,17 +212,41 @@
     <div class="about-content">
       <div class="about-text">
         <h3>Who We Are</h3>
-        <p>cyberM is a cybersecurity learning platform. We curate the best open resources, build structured career roadmaps, and offer hands-on tool training for aspiring and professional security practitioners.</p>
+        <p>cyberM is a cybersecurity learning platform. We curate the best open resources, build structured vertical career roadmaps, and offer hands-on tool training for aspiring and professional security practitioners.</p>
         <h3>What We Do</h3>
         <p>We don't sell software. We sell knowledge. Our tool training programs teach you how to use industry-standard security tools effectively — from Nmap to Burp Suite, Metasploit to Wireshark.</p>
         <h3>Our Mission</h3>
         <p>Make cybersecurity education accessible, structured, and practical. Bridge the gap between free resources and paid certifications with guided, affordable learning paths.</p>
       </div>
       <div class="about-values">
-        <div class="value-card"><div class="value-icon">🎯</div><h4>Structured Learning</h4><p>Clear roadmaps. No confusion. Know exactly what to learn next.</p></div>
-        <div class="value-card"><div class="value-icon">🔓</div><h4>Open Resources</h4><p>We link to the best free content across the internet. No gatekeeping.</p></div>
-        <div class="value-card"><div class="value-icon">🛠️</div><h4>Tool Training</h4><p>Learn to use real security tools with guided, practical training programs.</p></div>
-        <div class="value-card"><div class="value-icon">🤝</div><h4>Community First</h4><p>Built by practitioners, for practitioners. Your growth is our metric.</p></div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <h4>Structured Learning</h4>
+          <p>Clear vertical roadmaps. No confusion. Know exactly what to learn next.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </div>
+          <h4>Open Resources</h4>
+          <p>We link to the best free content across the internet. No gatekeeping.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h4>Tool Training</h4>
+          <p>Learn to use real security tools with guided, practical training programs.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h4>Community First</h4>
+          <p>Built by practitioners, for practitioners. Your growth is our metric.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -219,10 +260,30 @@
 
     <div class="contact-layout">
       <div class="contact-info">
-        <div class="contact-item"><div class="contact-icon">✉️</div><div><h4>Email</h4><p>contact@cyberm.io</p></div></div>
-        <div class="contact-item"><div class="contact-icon">📍</div><div><h4>Location</h4><p>Remote — Global</p></div></div>
-        <div class="contact-item"><div class="contact-icon">💬</div><div><h4>Social</h4><p>Twitter / LinkedIn / GitHub</p></div></div>
-        <div class="contact-item"><div class="contact-icon">🕐</div><div><h4>Response Time</h4><p>Within 24 hours</p></div></div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div><h4>Email</h4><p>contact@cyberm.io</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div><h4>Location</h4><p>Remote — Global</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+          <div><h4>Social</h4><p>Twitter / LinkedIn / GitHub</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div><h4>Response Time</h4><p>Within 24 hours</p></div>
+        </div>
       </div>
       <form class="contact-form" id="contactForm" onsubmit="handleContact(event)">
         <div class="form-row">
@@ -242,7 +303,10 @@
           <label for="cMessage">Message</label>
           <textarea id="cMessage" placeholder="Tell us what you need..." required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Send Message →</button>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+          Send Message
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
       </form>
     </div>
   </section>
@@ -250,7 +314,7 @@
   <!-- ========== FOOTER ========== -->
   <footer class="site-footer">
     <div class="footer-inner">
-      <p>© 2024 cyberM. All rights reserved.</p>
+      <p>© 2026 cyberM. All rights reserved.</p>
       <div class="footer-links">
         <a onclick="navigateTo('about')">About</a>
         <a onclick="navigateTo('contact')">Contact</a>
@@ -275,15 +339,19 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="enrollTraining()">Enroll in Training →</button>
+        <button class="btn btn-primary" onclick="enrollTraining()">
+          Enroll in Training
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
         <button class="btn btn-secondary" onclick="closeModal(); navigateTo('contact');">Contact Us</button>
       </div>
     </div>
   </div>
 
-
   <!-- ========== cyberM ASSISTANT ========== -->
-  <button class="assistant-launcher" id="assistantLauncher" aria-label="Open cyberM Assistant" title="cyberM Assistant">🤖</button>
+  <button class="assistant-launcher" id="assistantLauncher" aria-label="Open cyberM Assistant" title="cyberM Assistant">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/></svg>
+  </button>
 
   <aside class="assistant-panel" id="assistantPanel" aria-label="cyberM Assistant" aria-hidden="true">
     <div class="assistant-header">
@@ -303,12 +371,14 @@
     </div>
     <form class="assistant-input-row" id="assistantForm">
       <input id="assistantInput" type="text" placeholder="Ask about careers, resources or tools..." autocomplete="off" />
-      <button class="btn btn-primary" type="submit" aria-label="Send message">➤</button>
+      <button class="btn btn-primary" type="submit" aria-label="Send message">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
     </form>
     <div class="assistant-disclaimer">Demo guidance only. Use security tools only on systems you own or are authorized to test.</div>
   </aside>
 
-  <!-- Scripts (Load data first, then logic) -->
+  <!-- ========== SCRIPTS ========== -->
   <script src="js/data.js"></script>
   <script src="js/script.js"></script>
 </body>

@@ -1,427 +1,416 @@
-/* ========== NAVIGATION ========== */
-function navigateTo(page) {
-  // Hide all sections
+/* ========== STATE MANAGEMENT ========== */
+let currentRoadmapId = "basics";
+let selectedResourceCategory = "all";
+
+/* ========== NAVIGATION CONTROLLER ========== */
+function navigateTo(pageId) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  
-  // Show target section
-  const targetSection = document.getElementById('page-' + page);
-  if (targetSection) {
-    targetSection.classList.add('active');
+  const targetPage = document.getElementById('page-' + pageId);
+  if (targetPage) {
+    targetPage.classList.add('active');
   }
-  
-  // Update nav links
+
   document.querySelectorAll('.nav-links a').forEach(a => {
-    a.classList.remove('active');
-    if (a.dataset.page === page) {
-      a.classList.add('active');
-    }
+    a.classList.toggle('active', a.getAttribute('data-page') === pageId);
   });
-  
-  // Close mobile menu
+
+  // Close mobile nav menu if open
   document.getElementById('navLinks').classList.remove('open');
   document.getElementById('hamburger').classList.remove('active');
-  
-  // Scroll to top
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ========== THEME TOGGLE ========== */
-const themeToggle = document.getElementById('themeToggle');
-function setTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-  localStorage.setItem('cyberm-theme', theme);
+/* ========== ROADMAP RENDERER ========== */
+function switchRoadmap(roadmapId) {
+  if (!roadmapsData[roadmapId]) return;
+  currentRoadmapId = roadmapId;
+
+  // Update button active state
+  document.querySelectorAll('.roadmap-nav-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-roadmap') === roadmapId);
+  });
+
+  const data = roadmapsData[roadmapId];
+
+  // Render Active Roadmap Header Banner
+  const headerEl = document.getElementById('roadmapHeader');
+  headerEl.innerHTML = `
+    <div class="roadmap-active-header-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      ${data.badge}
+    </div>
+    <h3>${data.title}</h3>
+    <p>${data.desc}</p>
+  `;
+
+  // Render Vertical Roadmap Nodes
+  const nodesContainer = document.getElementById('verticalRoadmapNodes');
+  nodesContainer.innerHTML = '';
+
+  data.nodes.forEach(node => {
+    const nodeCard = document.createElement('div');
+    nodeCard.className = 'vertical-node-card';
+
+    // Topics Grid HTML
+    let topicsHTML = '';
+    if (node.topics && node.topics.length > 0) {
+      topicsHTML = `
+        <div class="vertical-node-subheading">Core Topics to Cover</div>
+        <div class="vertical-topics-grid">
+          ${node.topics.map(topic => `
+            <div class="vertical-topic-card">
+              <div class="vertical-topic-card-title">${topic.category}</div>
+              <ul>
+                ${topic.items.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Tools Row HTML
+    let toolsHTML = '';
+    if (node.tools && node.tools.length > 0) {
+      toolsHTML = `
+        <div class="vertical-tools-row">
+          <span class="vertical-tools-label">Key Tools to Master:</span>
+          ${node.tools.map(tool => `<span class="vertical-tool-chip">${tool}</span>`).join('')}
+        </div>
+      `;
+    }
+
+    nodeCard.innerHTML = `
+      <div class="vertical-node-marker">${node.number}</div>
+      <div class="vertical-node-header">
+        <div class="vertical-node-title-group">
+          <span class="vertical-node-step-tag">Node ${node.number}</span>
+          <h4 class="vertical-node-title">${node.title}</h4>
+        </div>
+      </div>
+      <div class="vertical-node-overview">${node.overview}</div>
+      ${topicsHTML}
+      ${toolsHTML}
+    `;
+
+    nodesContainer.appendChild(nodeCard);
+  });
 }
-themeToggle.addEventListener('click', () => {
-  const current = document.documentElement.getAttribute('data-theme');
-  setTheme(current === 'dark' ? 'light' : 'dark');
-});
-// Load saved theme
-const savedTheme = localStorage.getItem('cyberm-theme') || 'dark';
-setTheme(savedTheme);
 
-/* ========== HAMBURGER ========== */
-document.getElementById('hamburger').addEventListener('click', function() {
-  this.classList.toggle('active');
-  document.getElementById('navLinks').classList.toggle('open');
-});
-
-/* ========== SEARCH & FILTER RESOURCES ========== */
-let currentFilter = 'all';
-let currentCategory = 'all';
-let currentLevel = 'all';
-let currentSearch = '';
-
+/* ========== RESOURCES RENDERER & FILTERS ========== */
 function renderResources() {
   const grid = document.getElementById('resourceGrid');
   if (!grid) return;
 
-  let filtered = resources.filter(r => {
-    const matchesType = currentFilter === 'all' || r.type === currentFilter;
-    const matchesCategory = currentCategory === 'all' || r.category === currentCategory;
-    const matchesLevel = currentLevel === 'all' || r.level === currentLevel;
-    const text = `${r.title} ${r.desc} ${r.source} ${r.skill} ${r.category}`.toLowerCase();
-    const matchesSearch = !currentSearch || text.includes(currentSearch);
-    return matchesType && matchesCategory && matchesLevel && matchesSearch;
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+  const levelTerm = document.getElementById('resourceLevelFilter').value;
+
+  const filtered = resources.filter(res => {
+    const matchesCategory = selectedResourceCategory === 'all' || res.category === selectedResourceCategory;
+    const matchesLevel = levelTerm === 'all' || res.level === levelTerm;
+    const matchesSearch = !searchTerm ||
+      res.title.toLowerCase().includes(searchTerm) ||
+      res.desc.toLowerCase().includes(searchTerm) ||
+      res.source.toLowerCase().includes(searchTerm) ||
+      res.skill.toLowerCase().includes(searchTerm);
+    return matchesCategory && matchesLevel && matchesSearch;
   });
 
-  if (grid) {
-    grid.innerHTML = filtered.length ? filtered.map(r => `
-      <article class="resource-card" data-type="${r.type}" data-category="${r.category}">
-        <div class="resource-card-top">
-          <span class="resource-type">${r.type === 'hands-on' ? 'LAB' : r.type.toUpperCase()}</span>
-          <span class="resource-level ${r.level}">${r.level}</span>
+  // Update Dashboard Stats
+  document.getElementById('resourceTotalCount').textContent = resources.length;
+  document.getElementById('resourceCategoryCount').textContent = new Set(resources.map(r => r.category)).size;
+  document.getElementById('resourceBeginnerCount').textContent = resources.filter(r => r.level === 'beginner').length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="no-results" style="grid-column: 1 / -1;">
+        <div class="no-results-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
-        <div class="resource-card-icon">${r.type === 'video' ? '▶' : r.type === 'blog' ? '◉' : r.type === 'hands-on' ? '⌘' : '↗'}</div>
-        <h3>${r.title}</h3>
-        <p>${r.desc}</p>
-        <div class="resource-tags"><span>${r.category.replace('-', ' ')}</span><span>${r.skill}</span></div>
-        <div class="resource-meta"><span>📌 ${r.source}</span><span>◷ ${r.level}</span></div>
-        <a class="resource-link" href="${r.link}" target="_blank" rel="noopener noreferrer">Open resource ↗</a>
-      </article>
-    `).join('') : `
-      <div class="no-results" style="grid-column:1/-1;">
-        <div class="no-results-icon">🔍</div><h3>No resources found</h3>
-        <p>Try another keyword, category, or learning level.</p>
-      </div>`;
+        <h3>No resources found</h3>
+        <p>Try adjusting your search terms or filters.</p>
+      </div>
+    `;
+    return;
   }
 
-  const total = document.getElementById('resourceTotalCount');
-  const cats = document.getElementById('resourceCategoryCount');
-  const beginners = document.getElementById('resourceBeginnerCount');
-  if (total) total.textContent = resources.length;
-  if (cats) cats.textContent = new Set(resources.map(r => r.category)).size;
-  if (beginners) beginners.textContent = resources.filter(r => r.level === 'beginner').length;
-}
-
-function filterResources(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderResources();
-}
-
-function filterResourceCategory(category, btn) {
-  currentCategory = category;
-  document.querySelectorAll('.resource-category').forEach(t => t.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderResources();
-}
-
-const searchInput = document.getElementById('searchInput');
-if (searchInput) {
-  searchInput.addEventListener('input', function(e) {
-    currentSearch = e.target.value.trim().toLowerCase();
-    renderResources();
-  });
-}
-
-const resourceLevelFilter = document.getElementById('resourceLevelFilter');
-if (resourceLevelFilter) {
-  resourceLevelFilter.addEventListener('change', function(e) {
-    currentLevel = e.target.value;
-    renderResources();
-  });
-}
-
-renderResources();
-
-/* ========== RENDER ROADMAPS ========== */
-function renderRoadmaps() {
-  const grid = document.getElementById('roadmapGrid');
-  grid.innerHTML = roadmaps.map(r => `
-    <div class="roadmap-card">
-      <div class="roadmap-card-icon">${r.icon}</div>
-      <h3>${r.title}</h3>
-      <p>${r.desc}</p>
-      <div class="tag-list">
-        ${r.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+  grid.innerHTML = filtered.map(res => `
+    <div class="resource-card">
+      <div class="resource-card-top">
+        <span class="resource-type">${res.type}</span>
+        <span class="resource-level ${res.level}">${res.level}</span>
       </div>
+      <h3>${res.title}</h3>
+      <p>${res.desc}</p>
+      <div class="resource-meta">
+        <span>By ${res.source}</span>
+        <span>•</span>
+        <span>${res.skill}</span>
+      </div>
+      <a href="${res.link}" target="_blank" rel="noopener noreferrer" class="resource-link">
+        Open Resource
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
     </div>
   `).join('');
 }
-renderRoadmaps();
 
-/* ========== RENDER TOOLS DIRECTORY ========== */
-const toolProfiles = {
-  nmap: { level: 'Beginner', tags: ['Network discovery', 'Port scanning'], purpose: 'Discover hosts, open ports, and running services on an authorized network.', safe: 'Use only on systems and networks you own or have permission to test.' },
-  burp: { level: 'Intermediate', tags: ['Web testing', 'HTTP analysis'], purpose: 'Inspect and test web application requests and responses in a controlled lab.', safe: 'Test only applications where you have explicit authorization.' },
-  metasploit: { level: 'Advanced', tags: ['Exploit validation', 'Penetration testing'], purpose: 'Validate vulnerabilities and security controls using a controlled penetration-testing framework.', safe: 'Use in intentionally vulnerable labs or authorized assessments.' },
-  wireshark: { level: 'Beginner', tags: ['Packet analysis', 'Networking'], purpose: 'Capture and inspect network packets to understand protocols and investigate issues.', safe: 'Capture traffic only on networks where monitoring is permitted.' },
-  hashcat: { level: 'Advanced', tags: ['Password auditing', 'Hash analysis'], purpose: 'Audit password strength by testing password hashes in approved security assessments.', safe: 'Use only with authorized password hashes and test environments.' },
-  john: { level: 'Intermediate', tags: ['Password auditing', 'Hash recovery'], purpose: 'Assess password strength and recover passwords from authorized hash samples.', safe: 'Never use it against accounts or hashes without permission.' },
-  splunk: { level: 'Intermediate', tags: ['SIEM', 'Threat monitoring'], purpose: 'Search, correlate, and visualize security events for monitoring and incident response.', safe: 'Use organization-approved data sources and follow privacy policies.' },
-  nessus: { level: 'Beginner', tags: ['Vulnerability assessment', 'Compliance'], purpose: 'Find vulnerabilities and configuration issues across authorized systems.', safe: 'Scanning can affect systems; obtain approval before running scans.' },
-  aircrack: { level: 'Advanced', tags: ['Wireless security', 'Wi-Fi assessment'], purpose: 'Assess wireless network security in a controlled and authorized environment.', safe: 'Practice only on your own lab network or an approved test network.' },
-  autopsy: { level: 'Intermediate', tags: ['Digital forensics', 'Evidence analysis'], purpose: 'Analyze disk images and digital evidence using forensic workflows.', safe: 'Preserve evidence integrity and follow the applicable legal process.' },
-  maltego: { level: 'Intermediate', tags: ['OSINT', 'Link analysis'], purpose: 'Map relationships between domains, organizations, and other publicly available data.', safe: 'Respect privacy, terms of service, and applicable laws.' },
-  gophish: { level: 'Advanced', tags: ['Phishing simulation', 'Awareness'], purpose: 'Run controlled phishing-awareness simulations to measure and improve training.', safe: 'Get written approval and avoid collecting real credentials.' }
-};
-
-let currentToolSearch = '';
-let currentToolCategory = 'all';
-let currentToolLevel = 'all';
-const directoryCategories = {
-  nmap: 'Network Analysis',
-  wireshark: 'Network Analysis',
-  burp: 'Web Application Security',
-  metasploit: 'Offensive Security',
-  hashcat: 'Password Security',
-  john: 'Password Security',
-  splunk: 'Security Monitoring',
-  nessus: 'Vulnerability Assessment',
-  aircrack: 'Wireless Security',
-  autopsy: 'Digital Forensics',
-  maltego: 'OSINT & Intelligence',
-  gophish: 'Security Awareness'
-};
-
-function getDirectoryCategory(tool) {
-  return directoryCategories[tool.id] || tool.category;
+function filterResourceCategory(cat, btn) {
+  selectedResourceCategory = cat;
+  document.querySelectorAll('#resourceCategoryStrip .resource-category').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderResources();
 }
 
-
-function getToolProfile(tool) {
-  return toolProfiles[tool.id] || { level: 'Beginner', tags: [], purpose: tool.brief, safe: 'Use responsibly and only with authorization.' };
-}
-
-function getToolCategories() {
-  return [...new Set(tools.map(getDirectoryCategory))].sort();
-}
-
-function renderToolControls() {
-  const categoryFilter = document.getElementById('toolCategoryFilter');
-  const summary = document.getElementById('toolsCategorySummary');
-  if (!categoryFilter || !summary) return;
-
-  categoryFilter.innerHTML = '<option value="all">All categories</option>' +
-    getToolCategories().map(category => `<option value="${category}">${category}</option>`).join('');
-  categoryFilter.value = currentToolCategory;
-
-  summary.innerHTML = getToolCategories().map(category => {
-    const count = tools.filter(tool => getDirectoryCategory(tool) === category).length;
-    const active = currentToolCategory === category ? 'active' : '';
-    return `<button class="category-chip ${active}" data-tool-category="${category}">${category}<span>${count}</span></button>`;
-  }).join('');
-}
-
-function getFilteredTools() {
-  return tools.filter(tool => {
-    const profile = getToolProfile(tool);
-    const searchable = [tool.name, getDirectoryCategory(tool), tool.category, tool.brief, profile.purpose, ...profile.tags].join(' ').toLowerCase();
-    const matchesSearch = !currentToolSearch || searchable.includes(currentToolSearch);
-    const matchesCategory = currentToolCategory === 'all' || getDirectoryCategory(tool) === currentToolCategory;
-    const matchesLevel = currentToolLevel === 'all' || profile.level === currentToolLevel;
-    return matchesSearch && matchesCategory && matchesLevel;
-  });
-}
-
+/* ========== TOOLS DIRECTORY RENDERER ========== */
 function renderTools() {
   const grid = document.getElementById('toolsGrid');
   if (!grid) return;
 
-  const filtered = getFilteredTools();
+  const searchTerm = document.getElementById('toolSearchInput').value.toLowerCase().trim();
+  const categoryTerm = document.getElementById('toolCategoryFilter').value;
+  const levelTerm = document.getElementById('toolLevelFilter').value;
+
+  const filtered = tools.filter(t => {
+    const matchesCategory = categoryTerm === 'all' || t.category === categoryTerm;
+    const matchesLevel = levelTerm === 'all' || t.level === levelTerm;
+    const matchesSearch = !searchTerm ||
+      t.name.toLowerCase().includes(searchTerm) ||
+      t.category.toLowerCase().includes(searchTerm) ||
+      t.brief.toLowerCase().includes(searchTerm);
+    return matchesCategory && matchesLevel && matchesSearch;
+  });
+
+  // Update Tool Stats
   document.getElementById('totalToolsCount').textContent = tools.length;
-  document.getElementById('totalCategoriesCount').textContent = getToolCategories().length;
-  document.getElementById('trendingToolsCount').textContent = tools.filter(tool => tool.trending).length;
+  document.getElementById('totalCategoriesCount').textContent = new Set(tools.map(t => t.category)).size;
+  document.getElementById('trendingToolsCount').textContent = tools.filter(t => t.trending).length;
   document.getElementById('toolsResultSummary').textContent = `Showing ${filtered.length} of ${tools.length} tools`;
 
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="no-results" style="grid-column:1 / -1"><div class="no-results-icon">⌕</div><h3>No tools found</h3><p>Try a different search term or reset the filters.</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(tool => {
-    const profile = getToolProfile(tool);
-    return `<article class="tool-card enhanced-tool-card" tabindex="0" role="button" aria-label="View details for ${tool.name}" onclick="openToolModal('${tool.id}')" onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); openToolModal('${tool.id}'); }">
-      <div class="tool-card-topline"><span class="tool-card-id">#${String(tools.indexOf(tool) + 1).padStart(3, '0')}</span>${tool.trending ? '<span class="tool-trending">Trending</span>' : ''}</div>
-      <div class="enhanced-tool-title-row"><div class="tool-icon">${tool.icon}</div><div><h3>${tool.name}</h3><p class="tool-cat">${getDirectoryCategory(tool)}</p></div></div>
-      <span class="tool-level ${profile.level.toLowerCase()}">${profile.level}</span>
-      <p class="tool-brief">${tool.brief}</p>
-      <p class="tool-purpose"><strong>Used for:</strong> ${profile.purpose}</p>
-      <div class="tag-list">${profile.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
-      <button class="view-btn" type="button" onclick="event.stopPropagation(); openToolModal('${tool.id}')">View tool details →</button>
-    </article>`;
-  }).join('');
+  grid.innerHTML = filtered.map(t => `
+    <div class="tool-card" onclick="openToolModal('${t.id}')">
+      <div class="tool-card-topline">
+        <span class="tool-level ${t.level.toLowerCase()}">${t.level}</span>
+        ${t.trending ? '<span class="tool-trending">Popular</span>' : ''}
+      </div>
+      <div class="enhanced-tool-title-row">
+        <div class="tool-icon">${t.icon}</div>
+        <div>
+          <h3>${t.name}</h3>
+          <p class="tool-cat">${t.category}</p>
+        </div>
+      </div>
+      <p class="tool-brief">${t.brief}</p>
+      <button class="view-btn">
+        View Overview & Features
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+  `).join('');
 }
 
-function resetToolFilters() {
-  currentToolSearch = '';
-  currentToolCategory = 'all';
-  currentToolLevel = 'all';
-  document.getElementById('toolSearchInput').value = '';
-  document.getElementById('toolCategoryFilter').value = 'all';
-  document.getElementById('toolLevelFilter').value = 'all';
-  renderToolControls();
-  renderTools();
+function populateToolCategoryFilter() {
+  const select = document.getElementById('toolCategoryFilter');
+  if (!select) return;
+  const categories = Array.from(new Set(tools.map(t => t.category)));
+  categories.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
+  });
 }
 
-renderToolControls();
-renderTools();
-
-document.getElementById('toolSearchInput').addEventListener('input', event => {
-  currentToolSearch = event.target.value.trim().toLowerCase();
-  renderTools();
-});
-document.getElementById('toolCategoryFilter').addEventListener('change', event => {
-  currentToolCategory = event.target.value;
-  renderToolControls();
-  renderTools();
-});
-document.getElementById('toolLevelFilter').addEventListener('change', event => {
-  currentToolLevel = event.target.value;
-  renderTools();
-});
-document.getElementById('resetToolFilters').addEventListener('click', resetToolFilters);
-document.getElementById('toolsCategorySummary').addEventListener('click', event => {
-  const chip = event.target.closest('[data-tool-category]');
-  if (!chip) return;
-  currentToolCategory = chip.dataset.toolCategory;
-  renderToolControls();
-  renderTools();
-});
-
-/* ========== TOOL MODAL ========== */
+/* ========== TOOL MODAL CONTROLLER ========== */
 function openToolModal(toolId) {
   const tool = tools.find(t => t.id === toolId);
   if (!tool) return;
+
   document.getElementById('modalTitle').textContent = tool.name;
   document.getElementById('modalOverview').innerHTML = tool.overview;
-  document.getElementById('modalFeatureList').innerHTML = tool.features.map(f => `<li>${f}</li>`).join('');
+
+  const featureList = document.getElementById('modalFeatureList');
+  featureList.innerHTML = tool.features.map(f => `<li>${f}</li>`).join('');
+
   document.getElementById('toolModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
   document.getElementById('toolModal').classList.remove('active');
-  document.body.style.overflow = '';
 }
-
-document.getElementById('toolModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
 
 function enrollTraining() {
   closeModal();
   navigateTo('contact');
-  setTimeout(() => {
-    document.getElementById('cSubject').value = 'tool-training';
-    document.getElementById('cMessage').focus();
-  }, 400);
+  document.getElementById('cSubject').value = 'tool-training';
+  document.getElementById('cMessage').value = `I want to enroll in ${document.getElementById('modalTitle').textContent} tool training.`;
 }
 
-/* ========== CONTACT FORM ========== */
+/* ========== CONTACT FORM CONTROLLER ========== */
 function handleContact(e) {
   e.preventDefault();
-  const data = {
-    name: document.getElementById('cName').value,
-    email: document.getElementById('cEmail').value,
-    subject: document.getElementById('cSubject').value,
-    message: document.getElementById('cMessage').value
-  };
-  // Backend integration point: POST /api/contact
-  console.log('Contact form data:', data);
-  alert('Message sent! We\'ll get back to you within 24 hours.');
-  e.target.reset();
+  alert('Thank you for reaching out! Your message has been sent successfully. We will get back to you within 24 hours.');
+  document.getElementById('contactForm').reset();
 }
 
-/* ========== INIT ========== */
-// Ensure home page is active on load
-document.addEventListener('DOMContentLoaded', function() {
-  navigateTo('home');
-});
-
-/* ========== cyberM ASSISTANT ========== */
-(function initAssistant() {
+/* ========== ASSISTANT BOT CONTROLLER ========== */
+function setupAssistant() {
   const launcher = document.getElementById('assistantLauncher');
   const panel = document.getElementById('assistantPanel');
   const closeBtn = document.getElementById('assistantClose');
-  const messages = document.getElementById('assistantMessages');
   const form = document.getElementById('assistantForm');
   const input = document.getElementById('assistantInput');
-  const quickActions = document.getElementById('assistantQuickActions');
+  const messages = document.getElementById('assistantMessages');
 
-  if (!launcher || !panel || !messages || !form) return;
-
-  function addMessage(text, sender = 'bot') {
-    const message = document.createElement('div');
-    message.className = `assistant-message ${sender}`;
-    message.textContent = text;
-    messages.appendChild(message);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  function openAssistant() {
-    panel.classList.add('active');
-    panel.setAttribute('aria-hidden', 'false');
-    if (!messages.children.length) {
-      addMessage('Hi! I am the cyberM Assistant. I can guide you through cybersecurity careers, learning resources, roadmaps, and security tools.');
-      addMessage('Choose a quick option below or ask me a question.');
+  launcher.addEventListener('click', () => {
+    panel.classList.toggle('active');
+    if (panel.classList.contains('active') && messages.children.length === 0) {
+      addAssistantMessage('bot', "Hello! Welcome to cyberM. I can help you find learning resources, explore security tools, or select a vertical career roadmap. What would you like to explore today?");
     }
-    input.focus();
-  }
-
-  function closeAssistant() {
-    panel.classList.remove('active');
-    panel.setAttribute('aria-hidden', 'true');
-  }
-
-  function showTopic(topic) {
-    if (topic === 'career') {
-      addMessage('career', 'user');
-      addMessage('A beginner-friendly order is:\n1. IT fundamentals and Linux\n2. Networking and protocols\n3. Security basics\n4. Hands-on labs\n5. Choose a specialization\n6. Build projects and prepare for roles.\n\nUse the Roadmap page to explore Penetration Tester, SOC Analyst, Network Security, Cloud Security, Malware Analysis, and GRC paths.');
-      addMessage('Would you like to open the Roadmap page?');
-    } else if (topic === 'resources') {
-      addMessage('resources', 'user');
-      addMessage('Start with networking fundamentals, OWASP Top 10, the NIST Cybersecurity Framework, MITRE ATT&CK, and guided practice on TryHackMe. The Resources page contains articles, videos, blogs, and ongoing security news.');
-      addMessage('I can open the Resources page for you.');
-    } else if (topic === 'tools') {
-      addMessage('tools', 'user');
-      addMessage('For beginners, start with Nmap for network discovery, Wireshark for packet analysis, Burp Suite for web testing, and Splunk for security monitoring. Open a tool card to see its overview and learning features.');
-      addMessage('I can open the Tools page for you.');
-    } else if (topic === 'roadmap') {
-      addMessage('roadmap', 'user');
-      addMessage('Available career paths include Penetration Tester, SOC Analyst, Network Security Engineer, Cloud Security Specialist, Malware Analyst, and GRC Analyst. Each path lists relevant skills and technologies.');
-      addMessage('Opening the Roadmap page will show all available paths.');
-    }
-  }
-
-  function answer(query) {
-    const q = query.toLowerCase();
-    if (q.includes('career') || q.includes('beginner') || q.includes('start')) {
-      showTopic('career');
-    } else if (q.includes('resource') || q.includes('learn') || q.includes('study') || q.includes('news')) {
-      showTopic('resources');
-    } else if (q.includes('tool') || q.includes('nmap') || q.includes('burp') || q.includes('wireshark') || q.includes('splunk')) {
-      showTopic('tools');
-    } else if (q.includes('roadmap') || q.includes('soc') || q.includes('penetration') || q.includes('cloud')) {
-      showTopic('roadmap');
-    } else if (q.includes('hello') || q.includes('hi')) {
-      addMessage('Hello! I can help you discover a cybersecurity career path, find learning resources, or understand security tools.');
-    } else {
-      addMessage('I can currently help with three areas: cybersecurity careers, learning resources, and tool discovery. Try asking “How do I start cybersecurity?”, “Show resources”, or “Explain Nmap”.');
-    }
-  }
-
-  launcher.addEventListener('click', openAssistant);
-  closeBtn.addEventListener('click', closeAssistant);
-  quickActions.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-assistant-action]');
-    if (button) showTopic(button.dataset.assistantAction);
   });
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const query = input.value.trim();
-    if (!query) return;
-    addMessage(query, 'user');
+
+  closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    addAssistantMessage('user', text);
     input.value = '';
-    answer(query);
+    setTimeout(() => respondToUser(text), 500);
   });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeAssistant();
+
+  document.getElementById('assistantQuickActions').addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+      const action = e.target.getAttribute('data-assistant-action');
+      if (action === 'career') {
+        addAssistantMessage('user', 'Start my cybersecurity journey');
+        setTimeout(() => {
+          addAssistantMessage('bot', 'Awesome! To start your journey, switch to our Main Cybersecurity Basics Vertical Roadmap. It covers OS fundamentals, networking, core security principles, and hands-on lab setup step-by-step.');
+          navigateTo('roadmap');
+          switchRoadmap('basics');
+        }, 500);
+      } else if (action === 'resources') {
+        addAssistantMessage('user', 'Find learning resources');
+        setTimeout(() => {
+          addAssistantMessage('bot', 'We have curated 46+ free learning resources including OWASP Top 10, NIST frameworks, PortSwigger Academy, and TryHackMe. Taking you there now!');
+          navigateTo('resources');
+        }, 500);
+      } else if (action === 'tools') {
+        addAssistantMessage('user', 'Explore security tools');
+        setTimeout(() => {
+          addAssistantMessage('bot', 'Explore our interactive Tools Directory to learn Nmap, Burp Suite, Metasploit, Wireshark, Splunk, and more. Taking you there now!');
+          navigateTo('tools');
+        }, 500);
+      } else if (action === 'roadmap') {
+        addAssistantMessage('user', 'Show career paths');
+        setTimeout(() => {
+          addAssistantMessage('bot', 'You can switch between 6 vertical career roadmaps: Cybersecurity Basics, SOC Analyst, Penetration Tester, Cloud Security, DFIR, and GRC Analyst!');
+          navigateTo('roadmap');
+        }, 500);
+      }
+    }
   });
-})();
+}
+
+function addAssistantMessage(sender, text) {
+  const messages = document.getElementById('assistantMessages');
+  const msg = document.createElement('div');
+  msg.className = `assistant-message ${sender}`;
+  msg.textContent = text;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function respondToUser(query) {
+  const q = query.toLowerCase();
+  if (q.includes('soc') || q.includes('blue') || q.includes('defense')) {
+    addAssistantMessage('bot', 'The SOC Analyst (Blue Team) roadmap focuses on monitoring, log correlation with Splunk/Sentinel, packet analysis with Wireshark, and incident response lifecycle!');
+    navigateTo('roadmap');
+    switchRoadmap('soc');
+  } else if (q.includes('pentest') || q.includes('red') || q.includes('hack') || q.includes('offensive')) {
+    addAssistantMessage('bot', 'The Penetration Tester (Red Team) roadmap covers OSINT recon, port scanning with Nmap, web exploitation with Burp Suite, and privilege escalation!');
+    navigateTo('roadmap');
+    switchRoadmap('pentest');
+  } else if (q.includes('cloud') || q.includes('aws') || q.includes('azure')) {
+    addAssistantMessage('bot', 'The Cloud Security Engineer roadmap guides you through IAM policies, Infrastructure as Code scanning with Terraform, and continuous CSPM auditing!');
+    navigateTo('roadmap');
+    switchRoadmap('cloud');
+  } else if (q.includes('forensic') || q.includes('dfir') || q.includes('memory')) {
+    addAssistantMessage('bot', 'The DFIR Specialist roadmap covers OS registry artifacts, disk imaging, RAM memory forensics with Volatility 3, and malware disassembly with Ghidra!');
+    navigateTo('roadmap');
+    switchRoadmap('dfir');
+  } else if (q.includes('grc') || q.includes('risk') || q.includes('compliance')) {
+    addAssistantMessage('bot', 'The GRC Analyst roadmap covers security policies, NIST CSF/ISO 27001 frameworks, quantitative risk assessment, and vendor audits!');
+    navigateTo('roadmap');
+    switchRoadmap('grc');
+  } else {
+    addAssistantMessage('bot', "I can guide you through our site! You can explore curated learning resources, test tools in our directory, or follow one of our vertical career roadmaps.");
+  }
+}
+
+/* ========== THEME TOGGLE CONTROLLER ========== */
+function setupThemeToggle() {
+  const btn = document.getElementById('themeToggle');
+  const savedTheme = localStorage.getItem('cyberM_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
+  btn.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('cyberM_theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById('themeToggle');
+  if (theme === 'dark') {
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  } else {
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+  }
+}
+
+/* ========== MOBILE NAVIGATION TOGGLE ========== */
+function setupMobileNav() {
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('open');
+  });
+}
+
+/* ========== INITIALIZATION ========== */
+document.addEventListener('DOMContentLoaded', () => {
+  setupThemeToggle();
+  setupMobileNav();
+
+  // Initialize Vertical Roadmap
+  switchRoadmap('basics');
+
+  // Initialize Resources
+  renderResources();
+  document.getElementById('searchInput').addEventListener('input', renderResources);
+  document.getElementById('resourceLevelFilter').addEventListener('change', renderResources);
+
+  // Initialize Tools Directory
+  populateToolCategoryFilter();
+  renderTools();
+  document.getElementById('toolSearchInput').addEventListener('input', renderTools);
+  document.getElementById('toolCategoryFilter').addEventListener('change', renderTools);
+  document.getElementById('toolLevelFilter').addEventListener('change', renderTools);
+  document.getElementById('resetToolFilters').addEventListener('click', () => {
+    document.getElementById('toolSearchInput').value = '';
+    document.getElementById('toolCategoryFilter').value = 'all';
+    document.getElementById('toolLevelFilter').value = 'all';
+    renderTools();
+  });
+
+  // Initialize Assistant
+  setupAssistant();
+});
